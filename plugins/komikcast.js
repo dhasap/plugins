@@ -46,31 +46,15 @@ class KomikcastScraper {
         return comics;
     }
 
-    async search(query, page = 1) {
-        const url = `${this.baseUrl}/?s=${query}&page=${page}`;
-        const doc = await this.fetchAndParse(url);
-        
-        const comics = [];
-        const elements = doc.querySelectorAll('div.list-update_item');
-        
-        elements.forEach(el => {
-            const title = el.querySelector('h3.title')?.innerText.trim();
-            const fullUrl = el.querySelector('a')?.href;
-            const cover = el.querySelector('img')?.src;
-            const chapter = el.querySelector('div.chapter')?.innerText.trim();
-            const endpoint = fullUrl?.split('/')[4];
-
-            if (title && endpoint) {
-                comics.push({
-                    title,
-                    chapter,
-                    cover,
-                    endpoint
-                });
-            }
-        });
-        
-        return comics;
+        async search(query) {
+        const response = await fetch(`/api/proxy?url=https://komikcast.cx/wp-admin/admin-ajax.php?action=data_fetcher&query=${query}`);
+        const data = await response.json();
+        return data.posts.map(post => ({
+            id: post.id,
+            title: post.title,
+            url: post.url,
+            image: post.thumbnail,
+        }));
     }
 
     async getMangaDetails(mangaUrl) {
