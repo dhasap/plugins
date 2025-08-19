@@ -1,7 +1,7 @@
 class KomikcastScraper {
     constructor() {
         this.proxy = 'https://proxy-bacayomi.vercel.app/api/proxy';
-        this.baseUrl = 'https://komikcast.li';
+        this.baseUrl = 'https://komikcast.lol'; // Updated base URL
     }
 
     async fetchAndParse(url) {
@@ -29,7 +29,7 @@ class KomikcastScraper {
         elements.forEach(el => {
             const title = el.querySelector('.luf a h3')?.innerText.trim();
             const fullUrl = el.querySelector('.imgu a')?.href;
-            const cover = el.querySelector('.imgu a img')?.getAttribute('data-src');
+            const cover = el.querySelector('.imgu a img')?.src;
             const chapter = el.querySelector('.luf ul li:first-child a')?.innerText.trim();
             const endpoint = fullUrl?.split('/')[4];
 
@@ -37,8 +37,8 @@ class KomikcastScraper {
                 comics.push({
                     title,
                     chapter,
-                    cover,
-                    endpoint
+                    image: `${this.proxy}?url=${encodeURIComponent(cover)}`,
+                    url: `/komik/${endpoint}`
                 });
             }
         });
@@ -46,36 +46,52 @@ class KomikcastScraper {
         return comics;
     }
 
-        async search(query) {
-        const response = await fetch(`/api/proxy?url=https://komikcast.cx/wp-admin/admin-ajax.php?action=data_fetcher&query=${query}`);
-        const data = await response.json();
-        return data.posts.map(post => ({
-            id: post.id,
-            title: post.title,
-            url: post.url,
-            image: post.thumbnail,
-        }));
+    async search(query) {
+        const url = `${this.baseUrl}/?s=${query}`;
+        const doc = await this.fetchAndParse(url);
+
+        const comics = [];
+        const elements = doc.querySelectorAll('div.listupd .bs');
+
+        elements.forEach(el => {
+            const title = el.querySelector('.tt')?.innerText.trim();
+            const fullUrl = el.querySelector('a')?.href;
+            const cover = el.querySelector('img')?.src;
+            const endpoint = fullUrl?.split('/')[4];
+
+            if (title && endpoint) {
+                comics.push({
+                    title,
+                    image: `${this.proxy}?url=${encodeURIComponent(cover)}`,
+                    url: `/komik/${endpoint}`
+                });
+            }
+        });
+
+        return comics;
     }
 
     async getMangaDetails(mangaUrl) {
-        const url = `${this.baseUrl}/komik/${mangaUrl}`;
+        const url = `${this.baseUrl}${mangaUrl}`;
         const doc = await this.fetchAndParse(url);
 
         const title = doc.querySelector('.komik_info-content-body-title')?.innerText.trim();
         const synopsis = doc.querySelector('.komik_info-description-sinopsis')?.innerText.trim();
         const genres = Array.from(doc.querySelectorAll('.komik_info-content-genre a')).map(el => el.innerText.trim());
         const status = doc.querySelector('.komik_info-content-info:contains("Status")')?.innerText.split(':')[1].trim();
+        const cover = doc.querySelector('.komik_info-content-thumbnail img')?.src;
 
         return {
             title,
             synopsis,
             genres,
-            status
+            status,
+            image: `${this.proxy}?url=${encodeURIComponent(cover)}`
         };
     }
 
     async getChapters(mangaUrl) {
-        const url = `${this.baseUrl}/komik/${mangaUrl}`;
+        const url = `${this.baseUrl}${mangaUrl}`;
         const doc = await this.fetchAndParse(url);
 
         const chapters = [];
@@ -107,7 +123,7 @@ class KomikcastScraper {
         elements.forEach(el => {
             const url = el.src;
             if (url) {
-                images.push(url);
+                images.push(`${this.proxy}?url=${encodeURIComponent(url)}`);
             }
         });
 
