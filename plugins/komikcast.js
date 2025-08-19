@@ -75,17 +75,23 @@ class KomikcastScraper {
         const url = `${this.baseUrl}${mangaUrl}`;
         const doc = await this.fetchAndParse(url);
 
-        const title = doc.querySelector('.komik_info-content-body-title')?.innerText.trim();
-        const synopsis = doc.querySelector('.komik_info-description-sinopsis')?.innerText.trim();
+        const title = doc.querySelector('h1.komik_info-content-body-title')?.innerText.trim();
+        const synopsis = doc.querySelector('.komik_info-description-sinopsis p')?.innerText.trim();
         const genres = Array.from(doc.querySelectorAll('.komik_info-content-genre a')).map(el => el.innerText.trim());
-        const status = doc.querySelector('.komik_info-content-info:contains("Status")')?.innerText.split(':')[1].trim();
-        const cover = doc.querySelector('.komik_info-content-thumbnail img')?.src;
+        const author = doc.querySelector('.komik_info-content-info:nth-child(2)')?.innerText.replace('Author:', '').trim();
+        const status = doc.querySelector('.komik_info-content-info:nth-child(3)')?.innerText.replace('Status:', '').trim();
+        const type = doc.querySelector('.komik_info-content-info-type a')?.innerText.trim();
+        const updated = doc.querySelector('.komik_info-content-update time')?.innerText.trim();
+        const cover = doc.querySelector('.komik_info-cover-image img')?.src;
 
         return {
             title,
             synopsis,
             genres,
+            author,
             status,
+            type,
+            updated,
             image: `${this.proxy}?url=${encodeURIComponent(cover)}`
         };
     }
