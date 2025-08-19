@@ -20,18 +20,18 @@ class KomikcastScraper {
     }
 
     async getPopular(page = 1) {
-        const url = `${this.baseUrl}/?page=${page}`;
+        const url = `${this.baseUrl}/daftar-komik/page/${page}/?status&type&orderby=popular`;
         const doc = await this.fetchAndParse(url);
         
         const comics = [];
-        const elements = doc.querySelectorAll('div.listupd .utao');
+        const elements = doc.querySelectorAll('div.list-update_item');
         
         elements.forEach(el => {
-            const title = el.querySelector('.luf a h3')?.innerText.trim();
-            const fullUrl = el.querySelector('.imgu a')?.href;
-            const cover = el.querySelector('.imgu a img')?.src;
-            const chapter = el.querySelector('.luf ul li:first-child a')?.innerText.trim();
-            const endpoint = fullUrl?.split('/')[4];
+            const title = el.querySelector('h3.title')?.innerText.trim();
+            const fullUrl = el.querySelector('a')?.href;
+            const cover = el.querySelector('.list-update_item-image img')?.src;
+            const chapter = el.querySelector('.chapter')?.innerText.trim();
+            const endpoint = fullUrl?.split('/').filter(Boolean).pop();
 
             if (title && endpoint) {
                 comics.push({
