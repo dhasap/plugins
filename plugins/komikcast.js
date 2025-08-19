@@ -38,7 +38,7 @@ class KomikcastScraper {
                     title,
                     chapter,
                     image: `${this.proxy}?url=${encodeURIComponent(cover)}`,
-                    url: `/komik/${endpoint}`
+                    url: `${this.baseUrl}/komik/${endpoint}`
                 });
             }
         });
@@ -63,12 +63,28 @@ class KomikcastScraper {
                 comics.push({
                     title,
                     image: `${this.proxy}?url=${encodeURIComponent(cover)}`,
-                    url: `/komik/${endpoint}`
+                    url: `${this.baseUrl}/komik/${endpoint}`
                 });
             }
         });
 
         return comics;
+    }
+
+    async getGenres() {
+        const url = `${this.baseUrl}/daftar-komik/`;
+        const doc = await this.fetchAndParse(url);
+
+        const genres = [];
+        const elements = doc.querySelectorAll('.komiklist_dropdown-menu.c4.genrez li');
+
+        elements.forEach(el => {
+            const name = el.querySelector('label').innerText.trim();
+            const id = el.querySelector('input').value;
+            genres.push({ id, name });
+        });
+
+        return genres;
     }
 
     async getMangaDetails(mangaUrl) {
