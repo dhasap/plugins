@@ -1,7 +1,7 @@
 class KomikcastScraper {
     constructor() {
         this.proxy = 'https://proxy-bacayomi.vercel.app/api/proxy';
-        this.baseUrl = 'https://komikcast.lol'; // Updated base URL
+        this.baseUrl = 'https://komikcast.li'; // Updated base URL
     }
 
     async fetchAndParse(url) {
