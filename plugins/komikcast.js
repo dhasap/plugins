@@ -135,6 +135,10 @@ class KomikcastScraper {
         const mangaEndpoint = mangaUrl.split('/').filter(Boolean).pop();
         localStorage.setItem(`chapters_komikcast_${mangaEndpoint}`, JSON.stringify({ mangaTitle, chapters }));
 
+        if (typeof setupNavigation === 'function') {
+            setupNavigation('komikcast');
+        }
+
         return chapters;
     }
 
