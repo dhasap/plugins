@@ -123,10 +123,12 @@ class KomikcastScraper {
             const date = el.querySelector('div.chapter-link-time')?.innerText.trim();
 
             if (title && url) {
+                const endpoint = url.split('/').filter(Boolean).pop();
                 chapters.push({
                     title,
                     url,
-                    date
+                    date,
+                    endpoint
                 });
             }
         });
