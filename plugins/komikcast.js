@@ -141,7 +141,7 @@ class KomikcastScraper {
         const elements = doc.querySelectorAll('.main-reading-area img');
 
         elements.forEach(el => {
-            const url = el.src;
+            const url = el.src || el.dataset.src;
             if (url) {
                 images.push(`${this.proxy}?url=${encodeURIComponent(url)}`);
             }
