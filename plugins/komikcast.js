@@ -88,8 +88,7 @@ class KomikcastScraper {
     }
 
     async getMangaDetails(mangaUrl) {
-        const url = `${this.baseUrl}${mangaUrl}`;
-        const doc = await this.fetchAndParse(url);
+        const doc = await this.fetchAndParse(mangaUrl);
 
         const title = doc.querySelector('h1.komik_info-content-body-title')?.innerText.trim();
         const synopsis = doc.querySelector('.komik_info-description-sinopsis p')?.innerText.trim();
@@ -113,8 +112,7 @@ class KomikcastScraper {
     }
 
     async getChapters(mangaUrl) {
-        const url = `${this.baseUrl}${mangaUrl}`;
-        const doc = await this.fetchAndParse(url);
+        const doc = await this.fetchAndParse(mangaUrl);
 
         const chapters = [];
         const elements = doc.querySelectorAll('li.komik_info-chapters-item');
