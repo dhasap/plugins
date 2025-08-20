@@ -131,6 +131,10 @@ class KomikcastScraper {
             }
         });
 
+        const mangaTitle = doc.querySelector('h1.komik_info-content-body-title')?.innerText.trim();
+        const mangaEndpoint = mangaUrl.split('/').filter(Boolean).pop();
+        localStorage.setItem(`chapters_komikcast_${mangaEndpoint}`, JSON.stringify({ mangaTitle, chapters }));
+
         return chapters;
     }
 
